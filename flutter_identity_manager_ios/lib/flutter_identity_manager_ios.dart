@@ -36,7 +36,9 @@ class FlutterIdentityManagerIOS extends FlutterIdentityManagerPlatform {
       String keypairName, String certName, String? password) async {
     // Under iOS the private key is saved in the keychain, so we
     // don't need an password to load it, instead we are using the
-    // password to encrypt the p12 with it.
+    // password to encrypt the p12 with it. But this means that we
+    // have to make sure that there is a password.
+    password = password ?? 'password';
     Uint8List? p12 = await _channel.invokeMethod<Uint8List>('loadIdentity',
         {'tag': keypairName, 'name': certName, 'password': password});
     if (p12 != null) {
