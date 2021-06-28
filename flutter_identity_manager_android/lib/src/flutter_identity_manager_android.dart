@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_identity_manager_platform_interface/flutter_identity_manager_platform_interface.dart';
+import 'package:path_provider/path_provider.dart';
 import 'rsa_key_pair.dart';
 
 /// An implementation of [FlutterIdentityManagerPlatform] for Android.
@@ -21,6 +22,7 @@ class FlutterIdentityManagerAndroid extends FlutterIdentityManagerPlatform {
 
   Future<void> _prepareStorageIfNeeded() async {
     if (!_preparedStorage) {
+      Hive.init((await getApplicationDocumentsDirectory()).path);
       FlutterSecureStorage secureStorage = const FlutterSecureStorage();
       String? encryptionKeyBase64 =
           await secureStorage.read(key: _secureStorageKey);

@@ -16,7 +16,7 @@ class RSAKeyPairFactory {
     Random seedSource = new Random.secure();
     Uint8List seed = new Uint8List(32);
     for (int i = 0; i < seed.length; i++) {
-      seed.add(seedSource.nextInt(256));
+      seed[i] = seedSource.nextInt(256);
     }
     secureRandom.seed(new KeyParameter(seed));
     return RSAKeyGenerator()

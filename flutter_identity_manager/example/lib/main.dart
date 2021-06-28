@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:math';
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter_identity_manager/flutter_identity_manager.dart';
 import 'package:share/share.dart';
 
