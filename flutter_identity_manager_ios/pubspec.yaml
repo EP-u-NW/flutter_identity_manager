@@ -1,0 +1,25 @@
+name: flutter_identity_manager_ios
+description: iOS implementation of the flutter_identity_manager plugin.
+repository: https://github.com/EPNW/flutter_identity_manager/tree/master/flutter_identity_manager_ios
+version: 1.0.0
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=2.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_identity_manager_platform_interface: #^1.0.0
+    path: ../flutter_identity_manager_platform_interface
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+ plugin:
+    implements: flutter_identity_manager
+    platforms:
+      ios:
+        pluginClass: FlutterIdentityManagerIosPlugin

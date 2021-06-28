@@ -1,0 +1,35 @@
+PODS:
+  - Flutter (1.0.0)
+  - flutter_cert_manager (0.0.1):
+    - Flutter
+    - OpenSSL-Universal (~> 1.1.180)
+  - OpenSSL-Universal (1.1.1100)
+  - share (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - flutter_cert_manager (from `.symlinks/plugins/flutter_cert_manager/ios`)
+  - share (from `.symlinks/plugins/share/ios`)
+
+SPEC REPOS:
+  trunk:
+    - OpenSSL-Universal
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  flutter_cert_manager:
+    :path: ".symlinks/plugins/flutter_cert_manager/ios"
+  share:
+    :path: ".symlinks/plugins/share/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  flutter_cert_manager: c15bbf2b912ca90fd25f922ac210c1dc4364b6f5
+  OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
+  share: 0b2c3e82132f5888bccca3351c504d0003b3b410
+
+PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+
+COCOAPODS: 1.10.1

@@ -1,0 +1,3 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="eu.epnw.flutter_identity_manager_android">
+  <application android:allowBackup="false"></application>
+</manifest>
