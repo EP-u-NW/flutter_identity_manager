@@ -1,3 +1,4 @@
+import 'dart:isolate';
 import 'dart:typed_data';
 import 'dart:math';
 
@@ -8,8 +9,11 @@ import 'package:pointycastle/export.dart';
 
 class RSAKeyPairFactory {
   final RSAKeyGenerator _generator;
+  final int keySize;
 
-  RSAKeyPairFactory(int keySize) : _generator = _init(keySize);
+  RSAKeyPairFactory(int keySize)
+      : keySize = keySize,
+        _generator = _init(keySize);
 
   static RSAKeyGenerator _init(int keySize) {
     SecureRandom secureRandom = new FortunaRandom();
@@ -27,6 +31,28 @@ class RSAKeyPairFactory {
 
   RSAKeyPair next() {
     return new RSAKeyPair.cast(_generator.generateKeyPair());
+  }
+
+  static void workIsolated(SendPort toCaller) {
+    ReceivePort fromCaller = new ReceivePort();
+    toCaller.send(fromCaller.sendPort);
+    RSAKeyPairFactory? cached = null;
+    fromCaller.listen((dynamic message) {
+      if (message != null && message is int && message > 0) {
+        if ((cached?.keySize ?? 0) != message) {
+          cached = new RSAKeyPairFactory(message);
+        }
+        RSAKeyPair next = cached!.next();
+        Uint8List privateKeyPkcs8 = next.pkcs8EncodeRSAPrivateKey();
+        Uint8List publicKeyPkcs8 = next.pkcs8EncodeRSAPublicKey();
+        ByteData privateKeyLength = new ByteData(4);
+        privateKeyLength.setUint32(0, privateKeyPkcs8.length);
+        toCaller.send(new TransferableTypedData.fromList(
+            [privateKeyLength, privateKeyPkcs8, publicKeyPkcs8]));
+      } else {
+        throw new ArgumentError('Unexpected message!');
+      }
+    });
   }
 }
 

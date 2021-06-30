@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:collection';
+import 'dart:isolate';
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:hive/hive.dart';
@@ -15,10 +18,16 @@ class FlutterIdentityManagerAndroid extends FlutterIdentityManagerPlatform {
   static const String _privateKeySuffix = '_private';
   static const String _publicKeySuffix = '_public';
 
+  bool _isolateWorkerSpawned;
+  late SendPort _toIsolateWorker;
   bool _preparedStorage;
   late Box<Uint8List> _storage;
+  Queue<Completer<ByteBuffer>> _isolateWorkCompleters;
 
-  FlutterIdentityManagerAndroid() : _preparedStorage = false;
+  FlutterIdentityManagerAndroid()
+      : _preparedStorage = false,
+        _isolateWorkerSpawned = false,
+        _isolateWorkCompleters = new Queue<Completer<ByteBuffer>>();
 
   Future<void> _prepareStorageIfNeeded() async {
     if (!_preparedStorage) {
@@ -55,16 +64,53 @@ class FlutterIdentityManagerAndroid extends FlutterIdentityManagerPlatform {
     return true;
   }
 
+  Future<void> _spawnIsolateWorkerIfNeeded() async {
+    if (!_isolateWorkerSpawned) {
+      _isolateWorkerSpawned = true;
+      Completer<SendPort> toIsolateSendPort = new Completer<SendPort>();
+      ReceivePort fromWoker = new ReceivePort();
+      bool first = true;
+      fromWoker.listen((dynamic message) {
+        if (first) {
+          first = false;
+          if (message != null && message is SendPort) {
+            toIsolateSendPort.complete(message);
+          } else {
+            throw new ArgumentError('Unexpected message!');
+          }
+        } else {
+          if (_isolateWorkCompleters.isNotEmpty &&
+              message != null &&
+              message is TransferableTypedData) {
+            _isolateWorkCompleters
+                .removeFirst()
+                .complete(message.materialize());
+          } else {
+            throw new ArgumentError('Unexpected message!');
+          }
+        }
+      });
+      await Isolate.spawn(RSAKeyPairFactory.workIsolated, fromWoker.sendPort);
+      _toIsolateWorker = await toIsolateSendPort.future;
+    }
+  }
+
+  // We are using hive to secure the keys so we can ignore
+  // the password
   @override
   Future<Uint8List?> generateKeyPair(String keypairName, int size,
       {String? password}) async {
     await _prepareStorageIfNeeded();
-    // We are using hive to secure the keys so we can ignore
-    // the password
-    RSAKeyPair keyPair = new RSAKeyPairFactory(size).next();
-    await _storage.put(
-        keypairName + _privateKeySuffix, keyPair.pkcs8EncodeRSAPrivateKey());
-    Uint8List publicKey = keyPair.pkcs8EncodeRSAPublicKey();
+    // We are generating the keypair in an isolate
+    await _spawnIsolateWorkerIfNeeded();
+    Completer<ByteBuffer> keypairCompleter = new Completer<ByteBuffer>();
+    _isolateWorkCompleters.add(keypairCompleter);
+    _toIsolateWorker.send(size);
+    ByteBuffer keypairData = await keypairCompleter.future;
+    int privateKeyLength = keypairData.asByteData().getUint32(0);
+    Uint8List privateKey = keypairData.asUint8List(4, privateKeyLength);
+    Uint8List publicKey = keypairData.asUint8List(4 + privateKeyLength);
+    await _storage.put(keypairName + _privateKeySuffix, privateKey);
     await _storage.put(keypairName + _publicKeySuffix, publicKey);
     return publicKey;
   }
