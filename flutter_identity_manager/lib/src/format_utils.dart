@@ -1,12 +1,6 @@
 import 'dart:typed_data';
 import 'dart:convert';
 
-String publicPkcs1DerToPem(Uint8List der) {
-  return '-----BEGIN RSA PUBLIC KEY-----\r\n' +
-      _constarinLineLength(base64.encode(der), 64) +
-      '\r\n-----END RSA PUBLIC KEY-----';
-}
-
 String privatePkcs8DerToPem(Uint8List der) {
   return '-----BEGIN PRIVATE KEY-----\r\n' +
       _constarinLineLength(base64.encode(der), 64) +

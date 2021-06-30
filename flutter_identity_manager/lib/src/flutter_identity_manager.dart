@@ -154,13 +154,13 @@ class IdentityRequest {
   final String? _password;
   bool _deleted;
 
-  /// The PEM encoded PKCS1 public key a certificate should
+  /// The DER encoded PKCS8 public key a certificate should
   /// be issued to to [complete] this request.
-  final String publicKey;
+  final Uint8List publicKey;
 
-  IdentityRequest._(this.name, this._password, Uint8List publicKeyPkcs1Der)
+  IdentityRequest._(this.name, this._password, Uint8List publicKeyPkcs8Der)
       : _deleted = false,
-        publicKey = publicPkcs1DerToPem(publicKeyPkcs1Der);
+        publicKey = publicKeyPkcs8Der;
 
   /// Completes this request to an [Identity] by associating
   /// the private key with this pem encoded X509 certificate.

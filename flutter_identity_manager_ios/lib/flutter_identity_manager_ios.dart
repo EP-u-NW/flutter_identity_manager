@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_identity_manager_platform_interface/flutter_identity_manager_platform_interface.dart';
+import 'package:pointycastle/asn1.dart';
+import 'package:pointycastle/asn1/primitives/asn1_sequence.dart';
 
 /// An implementation of [FlutterIdentityManagerPlatform] for iOS.
 class FlutterIdentityManagerIOS extends FlutterIdentityManagerPlatform {
@@ -54,7 +56,12 @@ class FlutterIdentityManagerIOS extends FlutterIdentityManagerPlatform {
     // For notes on password see generateKeyPair
     Uint8List? publicKey = await _channel
         .invokeMethod<Uint8List>('loadPublicKey', {'tag': keypairName});
-    return publicKey;
+    //On iOS, that public key is pkcs1, we need it pkcs8, so do some conversions
+    if (publicKey != null) {
+      return _pkcs8EncodeRSAPublicKey(publicKey);
+    } else {
+      return null;
+    }
   }
 
   @override
@@ -64,3 +71,12 @@ class FlutterIdentityManagerIOS extends FlutterIdentityManagerPlatform {
     return result ?? false;
   }
 }
+
+final ASN1ObjectIdentifier _rsaIdentifier =
+    new ASN1ObjectIdentifier.fromIdentifierString('1.2.840.113549.1.1.1');
+
+Uint8List _pkcs8EncodeRSAPublicKey(Uint8List pkcs1EncodedRSAPublicKey) =>
+    new ASN1Sequence(elements: [
+      _rsaIdentifier,
+      new ASN1BitString(stringValues: pkcs1EncodedRSAPublicKey)
+    ]).encode();

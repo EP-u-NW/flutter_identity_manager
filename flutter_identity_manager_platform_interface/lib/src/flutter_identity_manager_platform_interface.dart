@@ -36,7 +36,7 @@ abstract class FlutterIdentityManagerPlatform extends PlatformInterface {
   Future<Uint8List?> generateKeyPair(String keypairName, int size, {String? password});
 
   /// Loads the public key associated with this keypair
-  /// in DER PKCS1 format, or returns null if there is no
+  /// in DER PKCS8 format, or returns null if there is no
   /// public key associated with this keypair name.
   Future<Uint8List?> loadPublicKey(String keypairName, {String? password});
 

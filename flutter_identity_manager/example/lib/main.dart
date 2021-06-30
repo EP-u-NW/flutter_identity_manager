@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 import 'dart:async';
+import 'dart:typed_data';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_identity_manager/flutter_identity_manager.dart';
 import 'package:share/share.dart';
@@ -37,7 +39,8 @@ class _MyAppState extends State<MyApp> {
                     ? null
                     : () async {
                         request = await IdentityRequest.create(name);
-                        await Share.share(request!.publicKey);
+                        await Share.share(
+                            _pkcs8DerPublicKeyToPem(request!.publicKey));
                         setState(() {
                           identity = null;
                         });
@@ -111,7 +114,8 @@ class _MyAppState extends State<MyApp> {
                           return;
                         }
                         request = r;
-                        await Share.share(request!.publicKey);
+                        await Share.share(
+                            _pkcs8DerPublicKeyToPem(request!.publicKey));
                         setState(() {
                           identity = null;
                         });
@@ -144,4 +148,22 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+}
+
+String _pkcs8DerPublicKeyToPem(Uint8List der) {
+  return '-----BEGIN PUBLIC KEY-----\r\n' +
+      _constarinLineLength(base64.encode(der)) +
+      '-----END PUBLIC KEY-----';
+}
+
+String _constarinLineLength(String input, [int maxLength = 64]) {
+  List<String> lines = [];
+  while (input.length > maxLength) {
+    lines.add(input.substring(0, maxLength));
+    input = input.substring(maxLength);
+  }
+  if (input.length != 0) {
+    lines.add(input);
+  }
+  return lines.join('\r\n');
 }

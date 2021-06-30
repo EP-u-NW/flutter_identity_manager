@@ -64,7 +64,7 @@ class FlutterIdentityManagerAndroid extends FlutterIdentityManagerPlatform {
     RSAKeyPair keyPair = new RSAKeyPairFactory(size).next();
     await _storage.put(
         keypairName + _privateKeySuffix, keyPair.pkcs8EncodeRSAPrivateKey());
-    Uint8List publicKey = keyPair.pkcs1EncodeRSAPublicKey();
+    Uint8List publicKey = keyPair.pkcs8EncodeRSAPublicKey();
     await _storage.put(keypairName + _publicKeySuffix, publicKey);
     return publicKey;
   }
