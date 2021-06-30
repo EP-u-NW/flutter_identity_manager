@@ -30,7 +30,12 @@ class FlutterIdentityManagerIOS extends FlutterIdentityManagerPlatform {
     // don't need an password to protect it
     Uint8List? publicKey = await _channel.invokeMethod<Uint8List>(
         'generateKey', {'tag': keypairName, 'size': size, 'permanent': true});
-    return publicKey;
+    //On iOS, that public key is pkcs1, we need it pkcs8, so do some conversions
+    if (publicKey != null) {
+      return _pkcs8EncodeRSAPublicKey(publicKey);
+    } else {
+      return null;
+    }
   }
 
   @override
