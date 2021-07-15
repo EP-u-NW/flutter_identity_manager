@@ -77,8 +77,10 @@ class FlutterIdentityManagerIOS extends FlutterIdentityManagerPlatform {
   }
 }
 
-final ASN1ObjectIdentifier _rsaIdentifier =
-    new ASN1ObjectIdentifier.fromIdentifierString('1.2.840.113549.1.1.1');
+final ASN1Object _rsaIdentifier = new ASN1Sequence(elements: [
+  new ASN1ObjectIdentifier.fromIdentifierString('1.2.840.113549.1.1.1'),
+  new ASN1Null()
+]);
 
 Uint8List _pkcs8EncodeRSAPublicKey(Uint8List pkcs1EncodedRSAPublicKey) =>
     new ASN1Sequence(elements: [

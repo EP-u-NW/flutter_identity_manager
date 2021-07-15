@@ -2,10 +2,10 @@ import Flutter
 import UIKit
 
 @available(iOS 10.0, *)
-public class SwiftFlutterCertManagerPlugin: NSObject, FlutterPlugin {
+public class SwiftFlutterIdentityManagerIosPlugin: NSObject, FlutterPlugin {
     
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let instance = SwiftFlutterCertManagerPlugin()
+    let instance = SwiftFlutterIdentityManagerIosPlugin()
     
     let channel = FlutterMethodChannel(name: "eu.epnw.flutter_identity_manager", binaryMessenger: registrar.messenger())
     registrar.addMethodCallDelegate(instance, channel: channel)
