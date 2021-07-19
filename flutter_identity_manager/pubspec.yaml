@@ -1,7 +1,7 @@
 name: flutter_identity_manager
 description: Manages identities in form of X509 certificates and private keys
 repository: https://github.com/EPNW/flutter_identity_manager/tree/master/flutter_identity_manager
-version: 1.0.0
+version: 1.0.1
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -11,17 +11,18 @@ dependencies:
   shared_preferences: ^2.0.6
   flutter:
     sdk: flutter
-  # The design on https://flutter.dev/go/federated-plugins was to leave
-  # this constraint as "any". We cannot do it right now as it fails pub publish
-  # validation, so we set a ^ constraint.
-  # TODO: Revisit this (either update this part in the design or the pub tool).
-  # https://github.com/flutter/flutter/issues/46264
-  flutter_identity_manager_platform_interface: #^1.0.0
-    path: ../flutter_identity_manager_platform_interface
-  flutter_identity_manager_android: #^1.0.0
-    path: ../flutter_identity_manager_android
-  flutter_identity_manager_ios: #^1.0.0
-    path: ../flutter_identity_manager_ios
+  flutter_identity_manager_platform_interface:
+    git:
+      url: https://github.com/EPNW/flutter_identity_manager.git
+      path: flutter_identity_manager_platform_interface
+  flutter_identity_manager_ios:
+    git:
+      url: https://github.com/EPNW/flutter_identity_manager.git
+      path: flutter_identity_manager_ios
+  flutter_identity_manager_android:
+    git:
+      url: https://github.com/EPNW/flutter_identity_manager.git
+      path: flutter_identity_manager_android
 
 flutter:
   plugin:

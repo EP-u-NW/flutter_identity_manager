@@ -65,9 +65,11 @@ packages:
   flutter_identity_manager_platform_interface:
     dependency: "direct main"
     description:
-      path: "../flutter_identity_manager_platform_interface"
-      relative: true
-    source: path
+      path: flutter_identity_manager_platform_interface
+      ref: HEAD
+      resolved-ref: b2e16c8741ad3c35cffa5da9abe12acd05fd9e92
+      url: "https://github.com/EPNW/flutter_identity_manager.git"
+    source: git
     version: "1.0.0"
   flutter_test:
     dependency: "direct dev"
